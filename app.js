@@ -1,9 +1,9 @@
 
-const { Client, Events, GatewayIntentBits, InteractionCollector } = require('discord.js');
+const { Client, GatewayIntentBits } = require('discord.js');
 const { joinVoiceChannel, createAudioPlayer, createAudioResource } = require('@discordjs/voice');
 const { Player } = require('discord-player');
 const { prefix, token } = require("./config.json");
-const ytdl = require("ytdl-core");
+const youtube = require('youtube-search-api');
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildVoiceStates] });
 
@@ -51,10 +51,11 @@ async function execute(message, serverQueue) {
     );
 
 
-  const songInfo = await ytdl.getInfo(search);
+  const songInfo = (await youtube.GetListByKeyword(search,false,1,[{type:"video"}]))
+
   const song = {
-        title: songInfo.videoDetails.title,
-        url: songInfo.videoDetails.video_url,
+        title: songInfo.items[0].title,
+        url: 'https://www.youtube.com/watch?v=' + songInfo.items[0].id,
    };
 
   if (!serverQueue) {
