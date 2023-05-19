@@ -6,6 +6,8 @@
     "discord.js": "^14.11.0",
     "ffmpeg": "^0.0.4",
     "fluent-ffmpeg": "^2.1.2",
+    "require-dir": "^1.2.0",
+    "typescript": "^5.0.4",
     "youtube-search-api": "^1.1.1",
     "ytdl-core": "^4.11.4"
   }
