@@ -8,6 +8,7 @@
     "fluent-ffmpeg": "^2.1.2",
     "opusscript": "^0.0.8",
     "require-dir": "^1.2.0",
+    "ts-node": "^10.9.1",
     "typescript": "^5.0.4",
     "youtube-search-api": "^1.1.1",
     "ytdl-core": "^4.11.4"
