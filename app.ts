@@ -37,16 +37,22 @@ client.on("messageCreate", async (message: Message<boolean>) => {
         skip(message, serverQueue);
         return;
       } else if (message.content.startsWith(`${prefix}pause`)) {
-        //pause(message, serverQueue);
+        pause(message, serverQueue);
         return;
       } else if (message.content.startsWith(`${prefix}resume`)) {
-        //resume(message, serverQueue);
+        resume(message, serverQueue);
         return;
       }
 });
 
 async function execute(message: Message<boolean>, serverQueue: types.jsonQueue | undefined) {
     const search: String = message.content.split(" ").splice(1).join(" ");
+
+    if (!search.length) {
+      return message.channel.send(
+        "You need to provide a song to play!"
+    );
+    }
 
     if (!message.guild) {
         return;
@@ -72,6 +78,12 @@ async function execute(message: Message<boolean>, serverQueue: types.jsonQueue |
     */
 
     const songInfo = (await youtube.GetListByKeyword(search,false,1,[{type:"video"}]))
+
+    if (!songInfo.items.length) {
+      return message.channel.send(
+        `Could not find the song: ${search}`
+    );
+    }
 
     const song: types.jsonSong = {
           title: songInfo.items[0].title,
@@ -165,11 +177,14 @@ async function play(guild: Guild | null, song: types.jsonSong) {
     currentQueue.audioPlayer.play(currentQueue.voiceChannel, song.url);
 }
 
+
 function skip(message: Message<boolean>, currentQueue: types.jsonQueue | undefined) {
-    if (!message.member?.voice.channel)
+    if (!message.member?.voice.channel) {
       return message.channel.send(
         "You have to be in a voice channel to stop the music!"
       );
+    }
+
     if (!currentQueue || !currentQueue.queue || currentQueue.queue.isEmpty() && !currentQueue.queue.isPlaying()) {
         return message.channel.send("There is no song that I could skip!");
     }
@@ -177,6 +192,40 @@ function skip(message: Message<boolean>, currentQueue: types.jsonQueue | undefin
 
     currentQueue.textChannel.send(`🎶 | ${message.author.username} Skipped the song`);
 }
+
+
+function pause(message: Message<boolean>, currentQueue: types.jsonQueue | undefined) {
+  if (!message.member?.voice.channel) {
+    return message.channel.send(
+      "You have to be in a voice channel to pause the music!"
+    );
+  }
+
+  if (!currentQueue || !currentQueue.queue || !currentQueue.queue.currentTrack || currentQueue.queue.isEmpty() && !currentQueue.queue.isPlaying()) {
+    return message.channel.send("There is no song to pause!");
+  }
+
+  currentQueue.queue.node.pause();
+
+  currentQueue.textChannel.send(`🎶 | ${message.author.username} Paused the song`);
+}
+
+function resume(message: Message<boolean>, currentQueue: types.jsonQueue | undefined) {
+  if (!message.member?.voice.channel) {
+    return message.channel.send(
+      "You have to be in a voice channel to resume the music!"
+    );
+  }
+
+  if (!currentQueue || !currentQueue.queue || !currentQueue.queue.node.isPaused()) {
+    return message.channel.send("There is no song to resume!");
+  }
+
+  currentQueue.queue.node.resume();
+
+  currentQueue.textChannel.send(`🎶 | ${message.author.username} Resumed the song`);
+}
+
 
 audioPlayer.events.on('playerStart', (guildQueue, track) => {
     const metadata: String | unknown = guildQueue.metadata;
