@@ -30,23 +30,31 @@ client.on("messageCreate", async (message: Message<boolean>) => {
 
     const serverQueue: types.jsonQueue | undefined = queue.get(message.guild?.id);
 
-    if (message.content.startsWith(`${prefix}play`)) {
+    const playRegex = new RegExp(`^\\${prefix}p(lay)?\\s`, 'i');
+    const skipRegex = new RegExp(`^\\${prefix}s(kip|\b)\b`, 'i');
+    const resumeRegex = new RegExp(`^\\${prefix}r(esume|\b)\b`, 'i');
+    const volumeRegex = new RegExp(`^\\${prefix}v(olume)?\\s`, 'i');
+
+    if (playRegex.exec(message.content)) {
         execute(message, serverQueue);
         return;
-      } else if (message.content.startsWith(`${prefix}skip`)) {
+      } else if (skipRegex.exec(message.content)) {
         skip(message, serverQueue);
         return;
       } else if (message.content.startsWith(`${prefix}pause`)) {
         pause(message, serverQueue);
         return;
-      } else if (message.content.startsWith(`${prefix}resume`)) {
+      } else if (resumeRegex.exec(message.content)) {
         resume(message, serverQueue);
+        return;
+      } else if (volumeRegex.exec(message.content)) {
+        volume(message, serverQueue);
         return;
       }
 });
 
 async function execute(message: Message<boolean>, serverQueue: types.jsonQueue | undefined) {
-    const search: String = message.content.split(" ").splice(1).join(" ");
+    const search: string = message.content.split(" ").splice(1).join(" ");
 
     if (!search.length) {
       return message.channel.send(
@@ -77,18 +85,27 @@ async function execute(message: Message<boolean>, serverQueue: types.jsonQueue |
     }
     */
 
-    const songInfo = (await youtube.GetListByKeyword(search,false,1,[{type:"video"}]))
+    let song: types.jsonSong;
 
-    if (!songInfo.items.length) {
-      return message.channel.send(
-        `Could not find the song: ${search}`
-    );
+    if(search.includes('youtube.com/watch?v=') || search.includes('youtu.be/')) {
+      song = {
+        title: '',
+        url: search,
+      };
+    } else {
+      const songInfo = (await youtube.GetListByKeyword(search,false,1,[{type:"video"}]))
+
+      if (!songInfo.items.length) {
+        return message.channel.send(
+          `Could not find the song: ${search}`
+      );
+      }
+  
+      song = {
+            title: songInfo.items[0].title,
+            url: 'https://www.youtube.com/watch?v=' + songInfo.items[0].id,
+       };
     }
-
-    const song: types.jsonSong = {
-          title: songInfo.items[0].title,
-          url: 'https://www.youtube.com/watch?v=' + songInfo.items[0].id,
-     };
 
     const queueContruct: types.jsonQueue = {
         textChannel: message.channel,
@@ -224,6 +241,38 @@ function resume(message: Message<boolean>, currentQueue: types.jsonQueue | undef
   currentQueue.queue.node.resume();
 
   currentQueue.textChannel.send(`🎶 | ${message.author.username} Resumed the song`);
+}
+
+function volume(message: Message<boolean>, currentQueue: types.jsonQueue | undefined) {
+  if (!message.member?.voice.channel) {
+    return message.channel.send(
+      "You have to be in a voice channel to change the volume!"
+    );
+  }
+
+  if (!currentQueue || !currentQueue.queue) {
+    return message.channel.send("Unable to change the volume!");
+  }
+
+  const volume: string = message.content.split(' ')[1];
+
+  const currentVolume: number = currentQueue.queue.node.volume;
+
+  let newVolume: number = parseInt(volume);
+
+  if (volume.startsWith('+') || volume.startsWith('-')) {
+    newVolume = currentVolume + ~~volume;
+  }
+
+  newVolume =  Math.min(100, Math.max(0, newVolume));
+
+  if (newVolume === currentVolume) {
+    return message.channel.send("Invalid volume set!");
+  }
+
+  currentQueue.queue.node.setVolume(newVolume);
+
+  currentQueue.textChannel.send(`🎶 | ${message.author.username} Set the volume to ${newVolume}`);
 }
 
 
