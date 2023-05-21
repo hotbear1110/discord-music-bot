@@ -149,7 +149,7 @@ async function execute(message: Message<boolean>, serverQueue: types.jsonQueue |
         queueContruct.connection = connection;
         queueContruct.audioPlayer = audioPlayer;
         queueContruct.queue = guildQueue;
-        play(message.guild, queueContruct.songs[0]);
+        play(message, queueContruct.songs[0]);
       } catch (err) {
         console.log(err);
         queue.delete(message.guild.id);
@@ -157,12 +157,12 @@ async function execute(message: Message<boolean>, serverQueue: types.jsonQueue |
       }
 }
 
-async function play(guild: Guild | null, song: types.jsonSong) {
-    if (!guild) {
+async function play(message: Message<boolean>, song: types.jsonSong) {
+    if (!message.guild) {
         return;
     }
     
-    const currentQueue: types.jsonQueue | undefined = queue.get(guild.id);
+    const currentQueue: types.jsonQueue | undefined = queue.get(message.guild.id);
 
     if(!currentQueue || !currentQueue.audioPlayer) {
         return;
@@ -170,7 +170,7 @@ async function play(guild: Guild | null, song: types.jsonSong) {
 
     if (!song) {
         await currentQueue.audioPlayer.destroy();
-        queue.delete(guild?.id);
+        queue.delete(message.guild?.id);
         return;
     }
   
@@ -277,9 +277,15 @@ function volume(message: Message<boolean>, currentQueue: types.jsonQueue | undef
 
 
 audioPlayer.events.on('playerStart', (guildQueue, track) => {
-    const metadata: String | unknown = guildQueue.metadata;
-    const currentQueue: types.jsonQueue | undefined = queue.get(metadata);
-    currentQueue?.textChannel.send(`🎶 | Started playing **${track.title}**`);
+  const metadata: String | unknown = guildQueue.metadata;
+  const currentQueue: types.jsonQueue | undefined = queue.get(metadata);
+  currentQueue?.textChannel.send(`🎶 | Started playing **${track.title}**`);
+});
+
+audioPlayer.events.on('playerError', (guildQueue, track) => {
+  const metadata: String | unknown = guildQueue.metadata;
+  const currentQueue: types.jsonQueue | undefined = queue.get(metadata);
+  currentQueue?.textChannel.send('Something went wrong when playing the song');
 });
 
 client.login(token);
