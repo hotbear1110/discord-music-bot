@@ -1,5 +1,5 @@
 import { VoiceConnection } from "@discordjs/voice"
-import { GuildQueue, GuildQueuePlayerNode, Player, Track } from "discord-player"
+import { GuildQueue, GuildQueuePlayerNode, Player } from "discord-player"
 import { DMChannel, GuildMember, NewsChannel, PartialDMChannel, PrivateThreadChannel, PublicThreadChannel, StageChannel, TextChannel, User, VoiceBasedChannel, VoiceChannel } from "discord.js"
 
 export interface jsonSong {
