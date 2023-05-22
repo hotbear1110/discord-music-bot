@@ -7,7 +7,7 @@ const youtube = require('youtube-search-api');
 
 const client: Client<boolean> = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildVoiceStates] });
 
-const queue: Map<String | unknown | undefined, types.jsonQueue> = new Map();
+const queue: Map<string | unknown | undefined, types.jsonQueue> = new Map();
 
 const audioPlayer: Player = Player.singleton(client);
 audioPlayer.extractors.loadDefault();
@@ -277,13 +277,13 @@ function volume(message: Message<boolean>, currentQueue: types.jsonQueue | undef
 
 
 audioPlayer.events.on('playerStart', (guildQueue, track) => {
-  const metadata: String | unknown = guildQueue.metadata;
+  const metadata: string | unknown = guildQueue.metadata;
   const currentQueue: types.jsonQueue | undefined = queue.get(metadata);
   currentQueue?.textChannel.send(`🎶 | Started playing **${track.title}**`);
 });
 
 audioPlayer.events.on('playerError', (guildQueue, track) => {
-  const metadata: String | unknown = guildQueue.metadata;
+  const metadata: string | unknown = guildQueue.metadata;
   const currentQueue: types.jsonQueue | undefined = queue.get(metadata);
   currentQueue?.textChannel.send('Something went wrong when playing the song');
 });
