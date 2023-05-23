@@ -31,8 +31,8 @@ client.on("messageCreate", async (message: Message<boolean>) => {
     const serverQueue: types.jsonQueue | undefined = queue.get(message.guild?.id);
 
     const playRegex = new RegExp(`^\\${prefix}p(lay)?\\s`, 'i');
-    const skipRegex = new RegExp(`^\\${prefix}s(kip|\b)\b`, 'i');
-    const resumeRegex = new RegExp(`^\\${prefix}r(esume|\b)\b`, 'i');
+    const skipRegex = new RegExp(`^\\${prefix}s(kip|\\b)\\b`, 'i');
+    const resumeRegex = new RegExp(`^\\${prefix}r(esume|\\b)\\b`, 'i');
     const volumeRegex = new RegExp(`^\\${prefix}v(olume)?\\s`, 'i');
 
     if (playRegex.exec(message.content)) {
