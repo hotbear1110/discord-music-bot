@@ -32,6 +32,7 @@ client.on("messageCreate", async (message: Message<boolean>) => {
 
     const playRegex = new RegExp(`^\\${prefix}p(lay)?\\s`, 'i');
     const skipRegex = new RegExp(`^\\${prefix}s(kip|\\b)\\b`, 'i');
+    const stopRegex = new RegExp(`^\\${prefix}stop\\b`, 'i');
     const resumeRegex = new RegExp(`^\\${prefix}r(esume|\\b)\\b`, 'i');
     const volumeRegex = new RegExp(`^\\${prefix}v(olume)?\\s`, 'i');
 
@@ -49,6 +50,9 @@ client.on("messageCreate", async (message: Message<boolean>) => {
         return;
       } else if (volumeRegex.exec(message.content)) {
         volume(message, serverQueue);
+        return;
+      } else if (stopRegex.exec(message.content)) {
+        stop(message, serverQueue);
         return;
       }
 });
@@ -275,6 +279,22 @@ function volume(message: Message<boolean>, currentQueue: types.jsonQueue | undef
   currentQueue.textChannel.send(`🎶 | ${message.author.username} Set the volume to ${newVolume}`);
 }
 
+async function stop(message: Message<boolean>, currentQueue: types.jsonQueue | undefined) {
+    if (!message.member?.voice.channel) {
+        return message.channel.send(
+        "You have to be in a voice channel to change the volume!"
+        );
+    }
+    if (!currentQueue || !currentQueue.queue || !currentQueue.audioPlayer) {
+        return;
+    }
+
+    currentQueue.queue.clear();
+    await currentQueue.audioPlayer.destroy();
+    queue.delete(message.guild?.id);
+
+    currentQueue.textChannel.send(`🎶 | Left the channel`);
+}
 
 audioPlayer.events.on('playerStart', (guildQueue, track) => {
   const metadata: string | unknown = guildQueue.metadata;
