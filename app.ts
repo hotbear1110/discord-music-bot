@@ -35,6 +35,7 @@ client.on("messageCreate", async (message: Message<boolean>) => {
     const stopRegex = new RegExp(`^\\${prefix}stop\\b`, 'i');
     const resumeRegex = new RegExp(`^\\${prefix}r(esume|\\b)\\b`, 'i');
     const volumeRegex = new RegExp(`^\\${prefix}v(olume)?\\s`, 'i');
+    const removeRegex = new RegExp(`^\\${prefix}remove\\s`, 'i');
 
     if (playRegex.exec(message.content)) {
         execute(message, serverQueue);
@@ -53,6 +54,9 @@ client.on("messageCreate", async (message: Message<boolean>) => {
         return;
       } else if (stopRegex.exec(message.content)) {
         stop(message, serverQueue);
+        return;
+      } else if (removeRegex.exec(message.content)) {
+        remove(message, serverQueue);
         return;
       }
 });
@@ -294,6 +298,37 @@ async function stop(message: Message<boolean>, currentQueue: types.jsonQueue | u
     queue.delete(message.guild?.id);
 
     currentQueue.textChannel.send(`🎶 | Left the channel`);
+}
+
+async function remove(message: Message<boolean>, currentQueue: types.jsonQueue | undefined) {
+  
+  if (!message.member?.voice.channel) {
+    return message.channel.send(
+    "You have to be in a voice channel to remove a song!"
+    );
+  }
+
+
+
+  const id: number = parseInt(message.content.split(" ")[1]);
+
+  if (id === 0) {
+    return message.channel.send("You can't remove the currently playing song");
+  }
+
+  if (!currentQueue || !currentQueue.queue || currentQueue.queue.isEmpty() || currentQueue.queue.size <= id) {
+    return message.channel.send("There is no song that I could remove!");
+  }
+
+  const track = currentQueue.queue.tracks.at(id);
+
+  if (!track) {
+    return message.channel.send("I was unable to remove the track");
+  }
+
+  currentQueue.queue.removeTrack(id);
+
+  currentQueue.textChannel.send(`🎶 | Removed song **${track.title}**`);
 }
 
 audioPlayer.events.on('playerStart', (guildQueue, track) => {
