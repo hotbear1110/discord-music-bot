@@ -36,6 +36,7 @@ client.on("messageCreate", async (message: Message<boolean>) => {
     const resumeRegex = new RegExp(`^\\${prefix}r(esume|\\b)\\b`, 'i');
     const volumeRegex = new RegExp(`^\\${prefix}v(olume)?\\s`, 'i');
     const removeRegex = new RegExp(`^\\${prefix}remove\\s`, 'i');
+    const queueRegex = new RegExp(`^\\${prefix}q(ueue)?\\s`, 'i');
 
     if (playRegex.exec(message.content)) {
         execute(message, serverQueue);
@@ -57,6 +58,9 @@ client.on("messageCreate", async (message: Message<boolean>) => {
         return;
       } else if (removeRegex.exec(message.content)) {
         remove(message, serverQueue);
+        return;
+      } else if (queueRegex.exec(message.content)) {
+        songQueue(message, serverQueue);
         return;
       }
 });
@@ -308,8 +312,6 @@ async function remove(message: Message<boolean>, currentQueue: types.jsonQueue |
     );
   }
 
-
-
   const id: number = parseInt(message.content.split(" ")[1]);
 
   if (id === 0) {
@@ -329,6 +331,32 @@ async function remove(message: Message<boolean>, currentQueue: types.jsonQueue |
   currentQueue.queue.removeTrack(id);
 
   currentQueue.textChannel.send(`🎶 | Removed song **${track.title}**`);
+}
+
+async function songQueue(message: Message<boolean>, currentQueue: types.jsonQueue | undefined) {
+  if (!message.member?.voice.channel) {
+    return message.channel.send(
+    "You have to be in a voice channel to see the queue!"
+    );
+  }
+
+  if (!currentQueue || !currentQueue.queue || currentQueue.queue.isEmpty()) {
+    return message.channel.send("There are no songs in the queue!");
+  }
+
+  let response = "Current queue:\n\n";
+
+  for (let id = 0; id < currentQueue.queue.size; id++) {
+    const track = currentQueue.queue.tracks.at(id);
+
+    if (!track) {
+      return message.channel.send("Something went wrong generating the queue");
+    }
+
+    response += `[${id}] - **${track.title}**\n`;
+  }
+
+  return message.channel.send(response);
 }
 
 audioPlayer.events.on('playerStart', (guildQueue, track) => {
