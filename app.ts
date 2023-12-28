@@ -323,7 +323,7 @@ async function remove(message: Message<boolean>, currentQueue: types.jsonQueue |
   }
 
   if (!currentQueue || !currentQueue.queue || currentQueue.queue.isEmpty() || currentQueue.queue.getSize() < id) {
-    return message.channel.send("There is no song that I could remove!");
+    return message.channel.send("There are no songs to remove!");
   }
 
   const track = currentQueue.queue.tracks.at(id - 1);
