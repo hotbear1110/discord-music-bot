@@ -37,7 +37,7 @@ client.on("messageCreate", async (message: Message<boolean>) => {
     const volumeRegex = new RegExp(`^\\${prefix}v(olume)?\\s`, 'i');
     const removeRegex = new RegExp(`^\\${prefix}remove\\s`, 'i');
     const queueRegex = new RegExp(`^\\${prefix}q(ueue)?\\b`, 'i');
-    const commandsRegex = new RegExp(`^\\${prefix}commands\\s`, 'i');
+    const commandsRegex = new RegExp(`^\\${prefix}commands\\b`, 'i');
 
     if (playRegex.exec(message.content)) {
         execute(message, serverQueue);
