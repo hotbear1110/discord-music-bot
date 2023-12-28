@@ -64,16 +64,7 @@ client.on("messageCreate", async (message: Message<boolean>) => {
         songQueue(message, serverQueue);
         return;
       } else if (commandsRegex.exec(message.content)) {
-        message.channel.send(`**Commands:**\n\n
-                              !play (!p) - Adds a song to the queue. Example: !play in da club\n\n
-                              !skip (!s) - Skips the current song\n\n
-                              !pause - Pauses the current song\n\n
-                              !resume (!r) - Resumes the song if paused\n\n
-                              !volume (!v) - Adjusts the volume of the song. Example: !volume 50\n\n
-                              !stop - Stops the music, deletes the queue and leaves the server\n\n
-                              !remove - Removes a song from the queue with the given index. Example: !remove 2\n\n
-                              !queue (!q) - Shows the song queue\n\n
-                              !commands - Shows this list of commands`);
+        message.channel.send(`**Commands:**\n\n!play (!p) - Adds a song to the queue. Example: !play in da club\n!skip (!s) - Skips the current song\n!pause - Pauses the current song\n!resume (!r) - Resumes the song if paused\n!volume (!v) - Adjusts the volume of the song. Example: !volume 50\n!stop - Stops the music, deletes the queue and leaves the server\n!remove - Removes a song from the queue with the given index. Example: !remove 2\n!queue (!q) - Shows the song queue\n!commands - Shows this list of commands`);
         return;
       }
 });
