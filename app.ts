@@ -36,7 +36,7 @@ client.on("messageCreate", async (message: Message<boolean>) => {
     const resumeRegex = new RegExp(`^\\${prefix}r(esume|\\b)\\b`, 'i');
     const volumeRegex = new RegExp(`^\\${prefix}v(olume)?\\s`, 'i');
     const removeRegex = new RegExp(`^\\${prefix}remove\\s`, 'i');
-    const queueRegex = new RegExp(`^\\${prefix}q(ueue)?\\s`, 'i');
+    const queueRegex = new RegExp(`^\\${prefix}q(ueue)?\\b`, 'i');
 
     if (playRegex.exec(message.content)) {
         execute(message, serverQueue);
@@ -200,7 +200,7 @@ async function play(message: Message<boolean>, song: types.jsonSong) {
 
     if (!currentQueue.queue.isEmpty() || currentQueue.queue.isPlaying()) {
         currentQueue.queue.addTrack(track.tracks[0]);
-        return currentQueue.textChannel.send(`🎶 | Added ${track.tracks[0].title} to the queue [${currentQueue.queue.getSize()}]`);;
+        return currentQueue.textChannel.send(`🎶 | Added **${track.tracks[0].title}** to the queue [${currentQueue.queue.getSize()}]`);;
     }
 
     currentQueue.audioPlayer.play(currentQueue.voiceChannel, song.url);
@@ -318,17 +318,17 @@ async function remove(message: Message<boolean>, currentQueue: types.jsonQueue |
     return message.channel.send("You can't remove the currently playing song");
   }
 
-  if (!currentQueue || !currentQueue.queue || currentQueue.queue.isEmpty() || currentQueue.queue.size < id) {
+  if (!currentQueue || !currentQueue.queue || currentQueue.queue.isEmpty() || currentQueue.queue.getSize() < id) {
     return message.channel.send("There is no song that I could remove!");
   }
 
-  const track = currentQueue.queue.tracks.at(id);
-
+  const track = currentQueue.queue.tracks.at(id - 1);
+  
   if (!track) {
     return message.channel.send("I was unable to remove the track");
   }
 
-  currentQueue.queue.removeTrack(id);
+  currentQueue.queue.removeTrack(id - 1);
 
   currentQueue.textChannel.send(`🎶 | Removed song **${track.title}**`);
 }
@@ -340,11 +340,31 @@ async function songQueue(message: Message<boolean>, currentQueue: types.jsonQueu
     );
   }
 
-  if (!currentQueue || !currentQueue.queue || currentQueue.queue.isEmpty()) {
-    return message.channel.send("There are no songs in the queue!");
+  if (!currentQueue || !currentQueue.queue) {
+    return message.channel.send("There is no queue!");
   }
 
   let response = "Current queue:\n\n";
+
+  if (currentQueue.queue.node.isPaused() && currentQueue.queue.currentTrack) {
+    if (currentQueue.queue.isEmpty()) {
+      return message.channel.send(`Currently playing [PAUSED] **${currentQueue.queue.currentTrack.title}**\n\nNo songs in the queue`);
+    } else {
+      response = `Currently playing [PAUSED] **${currentQueue.queue.currentTrack.title}**\n\nCurrent queue:\n\n`;
+    }
+  }
+
+  if (!currentQueue.queue.node.isPaused() && currentQueue.queue.isPlaying() && currentQueue.queue.currentTrack) {
+    if (currentQueue.queue.isEmpty()) {
+      return message.channel.send(`Currently playing **${currentQueue.queue.currentTrack.title}**\n\nNo songs in the queue`);
+    } else {
+      response = `Currently playing **${currentQueue.queue.currentTrack.title}**\n\nCurrent queue:\n\n`;
+    }
+  }
+
+  if (!currentQueue.queue.isPlaying() && !currentQueue.queue.node.isPaused() && currentQueue.queue.isEmpty()) {
+    return message.channel.send("There is no queue!");
+  }
 
   for (let id = 0; id < currentQueue.queue.size; id++) {
     const track = currentQueue.queue.tracks.at(id);
@@ -353,7 +373,7 @@ async function songQueue(message: Message<boolean>, currentQueue: types.jsonQueu
       return message.channel.send("Something went wrong generating the queue");
     }
 
-    response += `[${id}] - **${track.title}**\n`;
+    response += `[${id + 1}] - **${track.title}**\n`;
   }
 
   return message.channel.send(response);
