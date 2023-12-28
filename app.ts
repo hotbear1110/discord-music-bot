@@ -318,7 +318,7 @@ async function remove(message: Message<boolean>, currentQueue: types.jsonQueue |
     return message.channel.send("You can't remove the currently playing song");
   }
 
-  if (!currentQueue || !currentQueue.queue || currentQueue.queue.isEmpty() || currentQueue.queue.size <= id) {
+  if (!currentQueue || !currentQueue.queue || currentQueue.queue.isEmpty() || currentQueue.queue.size < id) {
     return message.channel.send("There is no song that I could remove!");
   }
 
