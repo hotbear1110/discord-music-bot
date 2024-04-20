@@ -3,6 +3,10 @@ import { Client, GatewayIntentBits, Guild, Message } from 'discord.js';
 import { joinVoiceChannel } from '@discordjs/voice';
 import { Player } from 'discord-player';
 import { prefix, token } from './config.json';
+
+const { promisify } = require('node:util');
+const { exec } = require('node:child_process');
+
 const youtube = require('youtube-search-api');
 
 const client: Client<boolean> = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildVoiceStates] });
@@ -38,6 +42,7 @@ client.on("messageCreate", async (message: Message<boolean>) => {
     const removeRegex = new RegExp(`^\\${prefix}remove\\s`, 'i');
     const queueRegex = new RegExp(`^\\${prefix}q(ueue)?\\b`, 'i');
     const commandsRegex = new RegExp(`^\\${prefix}commands\\b`, 'i');
+    const restartRegex = new RegExp(`^\\${prefix}(restart|fix)\\b`, 'i');
 
     if (playRegex.exec(message.content)) {
         execute(message, serverQueue);
@@ -66,6 +71,11 @@ client.on("messageCreate", async (message: Message<boolean>) => {
       } else if (commandsRegex.exec(message.content)) {
         message.channel.send(`**Commands:**\n\n>>> !play (!p) - Adds a song to the queue. Example: !play in da club\n!skip (!s) - Skips the current song\n!pause - Pauses the current song\n!resume (!r) - Resumes the song if paused\n!volume (!v) - Adjusts the volume of the song. Example: !volume 50\n!stop - Stops the music, deletes the queue and leaves the server\n!remove - Removes a song from the queue with the given index. Example: !remove 2\n!queue (!q) - Shows the song queue\n!commands - Shows this list of commands`);
         return;
+      } else if (restartRegex.exec(message.content)) {
+        // Easy fix "for now"
+        const shell = promisify(exec);
+
+        shell('sudo systemctl restart discord-music-bot')
       }
 });
 
