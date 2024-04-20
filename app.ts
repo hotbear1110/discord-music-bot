@@ -74,6 +74,7 @@ client.on("messageCreate", async (message: Message<boolean>) => {
       } else if (restartRegex.exec(message.content)) {
         // Easy fix "for now"
         const shell = promisify(exec);
+        await message.channel.send(`Restarting bot...`);
 
         shell('sudo systemctl restart discord-music-bot')
       }
