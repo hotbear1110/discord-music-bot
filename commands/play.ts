@@ -38,6 +38,7 @@ export default async function play(message: Message<boolean>, song: types.jsonSo
         console.log(track);
         if (!currentQueue.queue.isPlaying() && !currentQueue.queue.node.isPaused() && currentQueue.queue.isEmpty()) {
             currentQueue.queue.clear();
+            currentQueue.audioPlayer.extractors.loadDefault();
             queue.delete(message.guild?.id);
         }
         return currentQueue.textChannel.send('Was unable to find the song');
