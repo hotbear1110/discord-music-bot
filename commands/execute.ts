@@ -45,6 +45,11 @@ export default async function execute(message: Message<boolean>, serverQueue: ty
             title: '',
             url: search,
         };
+    } else if (search.includes('spotify.com/track/')) {
+        song = {
+            title: 'test',
+            url: search,
+        };
     } else {
         const songInfo = (await youtube.GetListByKeyword(search, false, 1, [{ type: "video" }]))
 
