@@ -24,8 +24,10 @@ export default async function play(message: Message<boolean>, song: types.jsonSo
         console.log(track + ' - ' + currentQueue.queue);
         if (currentQueue.queue && (!currentQueue.queue.isPlaying() && !currentQueue.queue.node.isPaused() && currentQueue.queue.isEmpty())) {
             currentQueue.queue.clear();
+            currentQueue.audioPlayer.extractors.loadDefault();
             queue.delete(message.guild?.id);
         } else if (!currentQueue.queue) {
+            currentQueue.audioPlayer.extractors.loadDefault();
             queue.delete(message.guild?.id);
         }
 
