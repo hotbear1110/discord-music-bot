@@ -50,6 +50,11 @@ export default async function execute(message: Message<boolean>, serverQueue: ty
             title: 'test',
             url: search,
         };
+    } else if (search.includes('soundcloud.com/')) {
+        song = {
+            title: 'test',
+            url: search,
+        };
     } else {
         const songInfo = (await youtube.GetListByKeyword(search, false, 1, [{ type: "video" }]))
 
