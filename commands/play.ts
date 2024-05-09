@@ -14,7 +14,6 @@ export default async function play(message: Message<boolean>, song: types.jsonSo
     }
 
     if (!song) {
-        await currentQueue.audioPlayer.destroy();
         queue.delete(message.guild?.id);
         return;
     }
