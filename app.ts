@@ -97,6 +97,12 @@ audioPlayer.events.on('playerError', (guildQueue, track) => {
   currentQueue?.textChannel.send('Something went wrong when playing the song');
 });
 
+audioPlayer.events.on('error', (queue, error) => {
+  // Emitted when the player queue encounters error
+  console.log(`General player error event: ${error.message}`);
+  console.log(error);
+});
+
 client.login(token);
 
 export { queue, audioPlayer }
