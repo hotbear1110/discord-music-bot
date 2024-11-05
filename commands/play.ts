@@ -49,5 +49,7 @@ export default async function play(message: Message<boolean>, song: types.jsonSo
         return currentQueue.textChannel.send(`🎶 | Added **${track.tracks[0].title}** to the queue [${currentQueue.queue.getSize()}]`);;
     }
 
-    currentQueue.audioPlayer.play(currentQueue.voiceChannel, track);
+    currentQueue.audioPlayer.extractors.loadDefault();
+
+    currentQueue.audioPlayer.play(currentQueue.voiceChannel, song.url);
 }
