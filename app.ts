@@ -88,6 +88,7 @@ client.on("messageCreate", async (message: Message<boolean>) => {
 audioPlayer.events.on('playerStart', (guildQueue, track) => {
   const metadata: string | unknown = guildQueue.metadata;
   const currentQueue: types.jsonQueue | undefined = queue.get(metadata);
+  console.log(track)
   currentQueue?.textChannel.send(`🎶 | Started playing **${track.title}**`);
 });
 
