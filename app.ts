@@ -24,8 +24,8 @@ const audioPlayer: Player = Player.singleton(client);
 client.once("ready", async () => {
   await audioPlayer.extractors.register(YoutubeiExtractor, {
     authentication: {
-        access_token: process.env.YT_ACCESS_TOKEN || '',
-        refresh_token: process.env.YT_REFRESH_TOKEN || '',
+        access_token: YT_ACCESS_TOKEN || '',
+        refresh_token: YT_REFRESH_TOKEN || '',
         scope: 'https://www.googleapis.com/auth/youtube https://www.googleapis.com/auth/youtube-paid-content',
         token_type: 'Bearer',
         expiry_date: '2024-12-02T06:36:40.670Z'
