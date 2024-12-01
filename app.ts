@@ -20,11 +20,11 @@ const client: Client<boolean> = new Client({ intents: [GatewayIntentBits.Guilds,
 const queue: Map<string | unknown | undefined, types.jsonQueue> = new Map();
 
 const audioPlayer: Player = Player.singleton(client);
-audioPlayer.extractors.register(YoutubeiExtractor, {
-  authentication: oauthTokens
-});
 
-client.once("ready", () => {
+client.once("ready", async () => {
+  await audioPlayer.extractors.register(YoutubeiExtractor, {
+    authentication: oauthTokens
+  });
   console.log("Ready!");
 });
 
