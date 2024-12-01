@@ -10,7 +10,7 @@ export default async function execute(message: Message<boolean>, serverQueue: ty
     const search: string = message.content.split(" ").splice(1).join(" ");
 
     if (!search.length) {
-        return message.channel.send(
+        return message.reply(
             "You need to provide a song to play!"
         );
     }
@@ -21,7 +21,7 @@ export default async function execute(message: Message<boolean>, serverQueue: ty
 
     const voiceChannel = message.member?.voice.channel;
     if (!voiceChannel) {
-        return message.channel.send(
+        return message.reply(
             "You need to be in a voice channel to play music!"
         );
     }
@@ -32,7 +32,7 @@ export default async function execute(message: Message<boolean>, serverQueue: ty
     /* This doesn't work rn
 
     if (client.voice.adapters.size && channel?.voiceChannel.members.size && channel?.voiceChannel.members.size < 1) {
-        return message.channel.send(
+        return message.reply(
             "I am already in another channel"
         );
     }
@@ -59,7 +59,7 @@ export default async function execute(message: Message<boolean>, serverQueue: ty
         const songInfo = (await youtube.GetListByKeyword(search, false, 1, [{ type: "video" }]))
 
         if (!songInfo.items.length) {
-            return message.channel.send(
+            return message.reply(
                 `Could not find the song: ${search}`
             );
         }
@@ -116,6 +116,6 @@ export default async function execute(message: Message<boolean>, serverQueue: ty
     } catch (err) {
         console.log(err);
         queue.delete(message.guild.id);
-        return message.channel.send('Something went wrong trying to play the song');
+        return message.reply('Something went wrong trying to play the song');
     }
 }
