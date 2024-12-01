@@ -4,7 +4,7 @@ import { queue } from '../app'
 
 export default async function stop(message: Message<boolean>, currentQueue: types.jsonQueue | undefined) {
     if (!message.member?.voice.channel) {
-        return message.channel.send(
+        return message.reply(
             "You have to be in a voice channel to change the volume!"
         );
     }

@@ -3,13 +3,13 @@ import { Message } from 'discord.js';
 
 export default function volume(message: Message<boolean>, currentQueue: types.jsonQueue | undefined) {
     if (!message.member?.voice.channel) {
-        return message.channel.send(
+        return message.reply(
             "You have to be in a voice channel to change the volume!"
         );
     }
 
     if (!currentQueue || !currentQueue.queue) {
-        return message.channel.send("Unable to change the volume!");
+        return message.reply("Unable to change the volume!");
     }
 
     const volume: string = message.content.split(' ')[1];
@@ -25,7 +25,7 @@ export default function volume(message: Message<boolean>, currentQueue: types.js
     newVolume = Math.min(100, Math.max(0, newVolume));
 
     if (newVolume === currentVolume) {
-        return message.channel.send("Invalid volume set!");
+        return message.reply("Invalid volume set!");
     }
 
     currentQueue.queue.node.setVolume(newVolume);
