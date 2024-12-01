@@ -1,7 +1,7 @@
 import * as types from './@types/app';
 import { Client, GatewayIntentBits, Message } from 'discord.js';
 import { Player } from 'discord-player';
-import { prefix, token, YT_ACCESS_TOKEN, YT_REFRESH_TOKEN } from './config.json';
+import { prefix, token, oauthTokens } from './config.json';
 import execute from './commands/execute'
 import skip from './commands/skip'
 import pause from './commands/pause'
@@ -22,15 +22,13 @@ const queue: Map<string | unknown | undefined, types.jsonQueue> = new Map();
 const audioPlayer: Player = Player.singleton(client);
 
 client.once("ready", async () => {
-  await audioPlayer.extractors.register(YoutubeiExtractor, {
-    authentication: {
-        access_token: YT_ACCESS_TOKEN || '',
-        refresh_token: YT_REFRESH_TOKEN || '',
-        scope: 'https://www.googleapis.com/auth/youtube https://www.googleapis.com/auth/youtube-paid-content',
-        token_type: 'Bearer',
-        expiry_date: '2024-12-02T06:36:40.670Z'
-    }
-  });
+  try {
+    await audioPlayer.extractors.register(YoutubeiExtractor, {
+      authentication: oauthTokens
+    });
+  } catch (err) {
+    console.log(err)
+  }
 
   console.log("Ready!");
 });
