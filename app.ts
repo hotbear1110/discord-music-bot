@@ -1,7 +1,7 @@
 import * as types from './@types/app';
 import { Client, GatewayIntentBits, Message } from 'discord.js';
 import { Player } from 'discord-player';
-import { prefix, token } from './config.json';
+import { prefix, token, oauthTokens } from './config.json';
 import execute from './commands/execute'
 import skip from './commands/skip'
 import pause from './commands/pause'
@@ -20,7 +20,9 @@ const client: Client<boolean> = new Client({ intents: [GatewayIntentBits.Guilds,
 const queue: Map<string | unknown | undefined, types.jsonQueue> = new Map();
 
 const audioPlayer: Player = Player.singleton(client);
-audioPlayer.extractors.register(YoutubeiExtractor, {});
+audioPlayer.extractors.register(YoutubeiExtractor, {
+  authentication: oauthTokens
+});
 
 client.once("ready", () => {
   console.log("Ready!");
