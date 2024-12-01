@@ -1,5 +1,5 @@
 import * as types from '../@types/app';
-import { Message } from 'discord.js';
+import { Message, TextChannel } from 'discord.js';
 import { joinVoiceChannel } from '@discordjs/voice';
 import { queue, audioPlayer } from '../app'
 import play from './play';
@@ -71,7 +71,7 @@ export default async function execute(message: Message<boolean>, serverQueue: ty
     }
 
     const queueContruct: types.jsonQueue = {
-        textChannel: message.channel,
+        textChannel: (message.channel as TextChannel),
         voiceChannel: voiceChannel,
         connection: null,
         audioPlayer: undefined,
