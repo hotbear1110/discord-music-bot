@@ -1,7 +1,7 @@
 import * as types from './@types/app';
 import { Client, GatewayIntentBits, Message } from 'discord.js';
 import { Player } from 'discord-player';
-import { prefix, token, oauthTokens } from './config.json';
+import { prefix, token, YT_ACCESS_TOKEN } from './config.json';
 import execute from './commands/execute'
 import skip from './commands/skip'
 import pause from './commands/pause'
@@ -24,9 +24,9 @@ const audioPlayer: Player = Player.singleton(client);
 client.once("ready", async () => {
   try {
     await audioPlayer.extractors.register(YoutubeiExtractor, {
-      authentication: oauthTokens,
+      authentication: YT_ACCESS_TOKEN,
       streamOptions: {
-        useClient: "ANDROID"
+        useClient: "WEB"
      }
     });
   } catch (err) {
