@@ -30,6 +30,9 @@ client.once("ready", async () => {
     console.log(err)
   }
 
+  await audioPlayer.extractors.loadDefault();
+  await audioPlayer.extractors.loadDefault((ext) => ext !== 'YouTubeExtractor');
+
   console.log("Ready!");
 });
 
