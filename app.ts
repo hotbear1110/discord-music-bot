@@ -22,9 +22,14 @@ const queue: Map<string | unknown | undefined, types.jsonQueue> = new Map();
 const audioPlayer: Player = Player.singleton(client);
 
 client.once("ready", async () => {
-  await audioPlayer.extractors.register(YoutubeiExtractor, {
-    authentication: oauthTokens
-  });
+  try {
+    await audioPlayer.extractors.register(YoutubeiExtractor, {
+      authentication: oauthTokens
+    });
+  } catch (err) {
+    console.log(err)
+  }
+
   console.log("Ready!");
 });
 
