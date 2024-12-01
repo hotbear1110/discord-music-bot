@@ -10,6 +10,7 @@ import volume from './commands/volume'
 import stop from './commands/stop'
 import remove from './commands/remove'
 import songQueue from './commands/songQueue';
+import { YoutubeiExtractor } from "discord-player-youtubei"
 
 const { promisify } = require('node:util');
 const { exec } = require('node:child_process');
@@ -19,7 +20,7 @@ const client: Client<boolean> = new Client({ intents: [GatewayIntentBits.Guilds,
 const queue: Map<string | unknown | undefined, types.jsonQueue> = new Map();
 
 const audioPlayer: Player = Player.singleton(client);
-audioPlayer.extractors.loadDefault();
+audioPlayer.extractors.register(YoutubeiExtractor, {});
 
 client.once("ready", () => {
   console.log("Ready!");
