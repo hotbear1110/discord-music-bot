@@ -3,6 +3,7 @@ import { Message, TextChannel } from 'discord.js';
 import { joinVoiceChannel } from '@discordjs/voice';
 import { queue, audioPlayer } from '../app'
 import play from './play';
+import {createDiscordJSAdapter} from '../adapter'
 
 const youtube = require('youtube-search-api');
 
@@ -90,7 +91,7 @@ export default async function execute(message: Message<boolean>, serverQueue: ty
         const connection = joinVoiceChannel({
             channelId: voiceChannel.id,
             guildId: voiceChannel.guild.id,
-            adapterCreator: voiceChannel.guild.voiceAdapterCreator,
+            adapterCreator: createDiscordJSAdapter(voiceChannel)
         });
 
         if (!audioPlayer) {
