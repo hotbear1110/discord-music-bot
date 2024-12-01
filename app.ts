@@ -24,14 +24,14 @@ const audioPlayer: Player = Player.singleton(client);
 client.once("ready", async () => {
   try {
     await audioPlayer.extractors.register(YoutubeiExtractor, {
-      authentication: oauthTokens
+      authentication: oauthTokens,
+      streamOptions: {
+        useClient: "ANDROID"
+     }
     });
   } catch (err) {
     console.log(err)
   }
-
-  await audioPlayer.extractors.loadDefault();
-  await audioPlayer.extractors.loadDefault((ext) => ext !== 'YouTubeExtractor');
 
   console.log("Ready!");
 });
